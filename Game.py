@@ -56,12 +56,12 @@ while not end:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 if x > 3:
-                    x_change = -3
+                    x_change = -4
                 else:
                     x_change = 0
             elif event.key == pygame.K_RIGHT:
                 if x < display_width - 213/2 - 3:
-                    x_change = 3
+                    x_change = 4
                 else:
                     x_change = 0
         if event.type == pygame.KEYUP:
@@ -75,7 +75,7 @@ while not end:
     basket(x, y)
 
     if x < 0:
-        x += 3
+        x += 4
     elif x > display_width - 213/2:
         x-=3
 
