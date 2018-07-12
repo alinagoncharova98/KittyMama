@@ -37,9 +37,17 @@ cat4 = load_image('cat4.png')
 basket_img = load_image('basket.png')
 cats = [cat1, cat2, cat3, cat4]
 
+x_cat = random.randint(int(97/2), int(display_width - 97/2))
+y_cat = -160
+y_change = 0
 
 def basket(x, y):
     window.blit(basket_img, (x, y))
+
+def cat(x, y):
+    #c = random.randint(0, 3)
+    window.blit(cat1, (x,y))
+
 
 
 x = display_width / 2 - 50
@@ -72,12 +80,18 @@ while not end:
         x += x_change
 
     window.blit(surface, (0, 0))
+    if y_cat < display_heigh:
+        y_change = 5
+    else:
+        y_cat = -160
+        x_cat = random.randrange(50, 550)
+    y_cat += y_change
+    cat(x_cat, y_cat)
     basket(x, y)
-
     if x < 0:
         x += 4
     elif x > display_width - 213/2:
-        x-=3
+        x -= 3
 
     pygame.display.update()
     clock.tick(60)
