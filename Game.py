@@ -1,5 +1,6 @@
 import pygame, random, os
 
+black = (0, 0, 0)
 
 class Gameobject:
     def __init__(self, b_image, speed, coord_x, coord_y):
@@ -9,6 +10,7 @@ class Gameobject:
         self.coord_y = coord_y
         self.hitbox_x = b_image.get_rect().size[0]
         self.hitbox_y = b_image.get_rect().size[0]
+
 
 
 def load_image(name):
@@ -38,10 +40,11 @@ basket_img = pygame.image.load('basket.png').convert_alpha()
 basket_img = pygame.transform.scale(basket_img, (int(basket_img.get_rect().size[0] / 2),\
                                                  int(basket_img.get_rect().size[1] / 2)))
 
+
 def basket(x, y):
     window.blit(basket_img, (x, y))
 
-
+# ScoreFunction
 def score_counter(count):
     font = pygame.font.SysFont(None, 25)
     text = font.render("Score:" + str(count), True, black)
@@ -51,11 +54,14 @@ def score_counter(count):
 clock = pygame.time.Clock()
 
 
+#MainGame
 def game_loop():
     pygame.init()
     x = display_width / 2 - 50
     y = display_heigh - 259 / 2
     x_change = 0
+
+
 
     cat1 = Gameobject(cat1_img, 5, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
     cat2 = Gameobject(cat2_img, 3, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
@@ -90,7 +96,7 @@ def game_loop():
         window.blit(cat2.b_image, (cat2.coord_x, cat2.coord_y))
         window.blit(cat3.b_image, (cat3.coord_x, cat3.coord_y))
         window.blit(cat4.b_image, (cat4.coord_x, cat4.coord_y))
-        print('1')
+        #print('1')
         basket(x, y)
         cat1.coord_y += cat1.speed
         cat2.coord_y += cat2.speed
@@ -119,6 +125,11 @@ def game_loop():
             x += 4
         elif x > display_width - 213 / 2:
             x -= 3
+
+        # Score
+        #score_counter(score)
+
+        # Collisons
 
         pygame.display.update()
         clock.tick(60)

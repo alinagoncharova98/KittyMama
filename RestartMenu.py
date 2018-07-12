@@ -1,5 +1,4 @@
 import pygame
-#import Game
 
 pygame.init()
 
@@ -17,7 +16,8 @@ surface = pygame.image.load("1.jpg")
 window.blit(surface, (0, 0))
 pygame.display.flip()
 
-
+myfont = pygame.font.SysFont("comicsansms", 16)
+score = 0
 
 def text_objects(text, font):
     textSurface = font.render(text, True, [255, 255, 255])
@@ -46,7 +46,12 @@ def button (msg, x, y, w, h, ic, ac, action=None ):
 done = True
 while done:
     window.blit(surface, (0, 0))
-    button("Start", 600, 120, 120, 25, (255, 255, 255),(0, 0, 0),  "Start")
+
+    scoretext = myfont.render("Your score {0}".format(score), 1, (0, 0, 0))
+    window.blit(scoretext, (5, 10))
+    score += 1
+
+    button("Restart", 600, 120, 120, 25, (255, 255, 255),(0, 0, 0),  "Start")
     button("Exit", 600, 620, 120, 25, (0, 0, 0), (255, 255, 255), "Exit")
     pygame.display.update()
 
