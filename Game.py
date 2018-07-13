@@ -1,14 +1,15 @@
 import pygame, random, os
 
 
-class Gameobject:
-    def __init__(self, b_image, speed, coord_x, coord_y):
-        self.b_image = b_image
+class Gameobject(pygame.sprite.Sprite):
+    def __init__(self, image, speed, coord_x, coord_y):
+        super().__init__()
+        self.image = image
         self.speed = speed
-        self.coord_x = coord_x
-        self.coord_y = coord_y
-        self.hitbox_x = b_image.get_rect().size[0]
-        self.hitbox_y = b_image.get_rect().size[0]
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.x = coord_x
+        self.rect.y = coord_y
 
 
 def load_image(name):
@@ -16,8 +17,7 @@ def load_image(name):
     image = pygame.transform.scale(image, (int(image.get_rect().size[0] * 0.75), int(image.get_rect().size[1] * 0.75)))
     return image
 
-
-#pygame.init()
+pygame.init()
 display_width = 500
 display_heigh = 680
 window = pygame.display.set_mode((display_width, display_heigh))
@@ -28,52 +28,60 @@ surface = pygame.transform.scale(surface, (display_width, display_heigh))
 window.blit(surface, (0, 0))
 pygame.display.flip()
 
-cat_list = pygame.sprite.Group()
-
 cat1_img = load_image('cat1.png')
 cat2_img = load_image('cat2.png')
 cat3_img = load_image('cat3.png')
 cat4_img = load_image('cat4.png')
-basket_img = pygame.image.load('basket.png').convert_alpha()
-basket_img = pygame.transform.scale(basket_img, (int(basket_img.get_rect().size[0] / 2),\
-                                                 int(basket_img.get_rect().size[1] / 2)))
+cats_img = [cat1_img, cat2_img, cat3_img, cat4_img]
 
-def basket(x, y):
-    window.blit(basket_img, (x, y))
+basket_img = pygame.image.load('basket.png').convert_alpha()
+basket_img = pygame.transform.scale(basket_img, (int(basket_img.get_rect().size[0] / 2), \
+                                                 int(basket_img.get_rect().size[1] / 2)))
 
 
 def score_counter(count):
-    font = pygame.font.SysFont(None, 25)
-    text = font.render("Score:" + str(count), True, black)
-    gameDisplay.blit(text, (0, 0))
+    font = pygame.font.SysFont("comicsansms", 35)
+    text = font.render("Score:" + str(count), True, (84, 197, 222))
+    window.blit(text, (330, 70))
 
 
 clock = pygame.time.Clock()
 
 
 def game_loop():
-    pygame.init()
-    x = display_width / 2 - 50
-    y = display_heigh - 259 / 2
+    cat_list = pygame.sprite.Group()
     x_change = 0
+    score = 0
 
-    cat1 = Gameobject(cat1_img, 5, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
-    cat2 = Gameobject(cat2_img, 3, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
-    cat3 = Gameobject(cat3_img, 3, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
-    cat4 = Gameobject(cat4_img, 4, random.randint(int(97 / 2), display_width - 48), -random.randint(160, 500))
+    basket = Gameobject(basket_img, 4, display_width / 2 - 50, display_heigh - 259 / 2)
+    basket_collide_mask = pygame.image.load('basket_collide_mask.png')
+    basket_collide_mask = pygame.transform.scale(basket_collide_mask, (int(basket_collide_mask.get_rect().size[0] / 2), \
+                                        int(basket_collide_mask.get_rect().size[1] / 2)))
+    basket.mask = basket.mask.clear()
+    basket.mask = pygame.mask.from_surface(basket_collide_mask)
+    for i in [0, 1, 2, 3]:
+        cat = Gameobject(cats_img[i], random.randint(3, 6), random.randint(int(97 / 2), display_width - 48),
+                         -random.randint(160, 500))
+        cat_list.add(cat)
+
     end = False
+    start_ticks = pygame.time.get_ticks()
     while not end:
+        seconds = (pygame.time.get_ticks() - start_ticks) / 1000
+        if seconds > 100:
+            end = True
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 end = True
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_LEFT:
-                    if x > 3:
+                    if basket.rect.x > 3:
                         x_change = -4
                     else:
                         x_change = 0
                 elif event.key == pygame.K_RIGHT:
-                    if x < display_width - 213 / 2 - 3:
+                    if basket.rect.x < display_width - 213 / 2 - 3:
                         x_change = 4
                     else:
                         x_change = 0
@@ -81,47 +89,41 @@ def game_loop():
                 if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                     x_change = 0
 
-        if 0 <= x <= display_width - 213 / 2:
-            x += x_change
+        if 0 <= basket.rect.x <= display_width - 213 / 2:
+            basket.rect.x += x_change
 
         window.blit(surface, (0, 0))
+        score_counter(score)
+        cat_hit_list = pygame.sprite.spritecollide(basket, cat_list, True, pygame.sprite.collide_mask)
 
-        window.blit(cat1.b_image, (cat1.coord_x, cat1.coord_y))
-        window.blit(cat2.b_image, (cat2.coord_x, cat2.coord_y))
-        window.blit(cat3.b_image, (cat3.coord_x, cat3.coord_y))
-        window.blit(cat4.b_image, (cat4.coord_x, cat4.coord_y))
-        print('1')
-        basket(x, y)
-        cat1.coord_y += cat1.speed
-        cat2.coord_y += cat2.speed
-        cat3.coord_y += cat2.speed
-        cat4.coord_y += cat4.speed
+        cat_list.draw(window)
 
-        if cat1.coord_y > display_heigh:
-            cat1.coord_y = -random.randint(160, 500)
-            cat1.coord_x = random.randint(int(97 / 2), display_width - 48)
-            cat1.speed = random.randint(3, 8)
-        if cat2.coord_y > display_heigh - 10:
-            cat2.coord_y = -random.randint(160, 500)
-            cat2.coord_x = random.randint(int(97 / 2), display_width - 48)
-            cat2.speed = random.randint(3, 8)
-        if cat3.coord_y > display_heigh:
-            cat3.coord_y = -random.randint(160, 500)
-            cat3.coord_x = random.randint(int(97 / 2), display_width - 48)
-            cat3.speed = random.randint(3, 8)
-        if cat4.coord_y > display_heigh:
-            cat4.coord_y = -random.randint(160, 500)
-            cat4.coord_x = random.randint(int(97 / 2), display_width - 48)
-            cat4.speed = random.randint(3, 8)
+        window.blit(basket_img, (basket.rect.x, basket.rect.y))
+
+        for cat in cat_list:
+            cat.rect.y += cat.speed
+            if cat.rect.y > display_heigh:
+                cat.rect.y = -random.randint(160, 500)
+                cat.rect.x = random.randint(int(97 / 2), display_width - 48)
+                cat.speed = random.randint(3, 6)
+
+        for cat in cat_hit_list:
+            score += 1
+            c = random.randint(0, 3)
+            cat = Gameobject(cats_img[c], random.randint(3, 6), random.randint(int(97 / 2), display_width - 48), \
+                             -random.randint(160, 500))
+            cat_list.add(cat)
 
 
-        if x < 0:
-            x += 4
-        elif x > display_width - 213 / 2:
-            x -= 3
+        if basket.rect.x < 0:
+            basket.rect.x += 4
+        elif basket.rect.x > display_width - 213 / 2:
+            basket.rect.x -= 3
 
         pygame.display.update()
-        clock.tick(60)
+        clock.tick(70)
+
+
 game_loop()
 pygame.quit()
 quit()
