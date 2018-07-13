@@ -20,7 +20,7 @@ pygame.display.flip()
 
 
 def text_objects(text, font):
-    textSurface = font.render(text, True, [255, 255, 255])
+    textSurface = font.render(text, True, [84, 197, 222])
     return textSurface, textSurface.get_rect()
 
 
@@ -29,7 +29,7 @@ def button (msg, x, y, w, h, ic, ac, action=None ):
     click = pygame.mouse.get_pressed()
 
     if (x+w > mouse[0] > x) and (y+h > mouse[1] > y):
-        pygame.draw.rect(window, (0,0,0), (x, y, w, h))
+        pygame.draw.rect(window, (228, 101, 101), (x, y, w, h))
         if (click[0] == 1 and action != None):
             if  (action == "Start"):
                 import Game
@@ -37,8 +37,8 @@ def button (msg, x, y, w, h, ic, ac, action=None ):
             elif (action == "Exit"):
                 pygame.quit()
     else:
-        pygame.draw.rect(window, (0,0,0), (x, y, w, h))
-        smallText = pygame.font.SysFont("comicsansms", 50)
+        pygame.draw.rect(window, (228, 101, 101), (x, y, w, h))
+        smallText = pygame.font.SysFont("comicsansms", 60)
         textSurf, textRect = text_objects(msg, smallText)
         textRect.center = ( (x+(w/2)), (y+(h/2)) )
         window.blit(textSurf, textRect)
@@ -46,8 +46,8 @@ def button (msg, x, y, w, h, ic, ac, action=None ):
 done = True
 while done:
     window.blit(surface, (0, 0))
-    button("Start", 600, 120, 120, 25, (255, 255, 255),(0, 0, 0),  "Start")
-    button("Exit", 600, 620, 120, 25, (0, 0, 0), (255, 255, 255), "Exit")
+    button("Start", 600, 300, 220, 50, (255, 255, 255),(0, 0, 0),  "Start")
+    button("Exit", 600, 500, 220, 50, (0, 0, 0), (255, 255, 255), "Exit")
     pygame.display.update()
 
     for e in pygame.event.get():
